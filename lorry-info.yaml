@@ -1,4 +1,1 @@
 name: lorry.preset-web
-targets:
-  '@':
-    path: target
