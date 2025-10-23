@@ -1,0 +1,91 @@
+{
+  "$id": "https://develfish.studio/example-store/layout.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "type": "object",
+  "title": "Bootstrap Application Using Models from an Existing Database",
+  "description": "Use this project generation preset to create an application by importing table definitions from an existing database.",
+  "properties": {
+    "project": {
+      "type": "object",
+      "title": "General Info",
+      "description": "This information is used to name files and directories in the target directory.",
+      "properties": {
+        "name": {
+          "title": "Project Name",
+          "default": "",
+          "type": "string",
+          "minLength": 4
+        }
+      },
+      "required": ["name"]
+    },
+    "database": {
+      "type": "object",
+      "title": "Source Database",
+      "description": "Specify the connection settings for your database to import table definitions.",
+      "properties": {
+        "type": {
+          "title": "Database Type",
+          "default": "",
+          "type": "string",
+          "enum": ["postgres", "mysql"]
+        },
+        "connection-string": {
+          "title": "Connection String",
+          "description": "This is the USQL connection string. You can enter a full connection string here or use an alias configured in the usql-config.yaml file located in the root of your project.",
+          "default": "",
+          "type": "string"
+        }
+      },
+      "required": ["type", "connection-string"]
+    },
+    "features": {
+      "type": "object",
+      "title": "Optional Features",
+      "description": "Select the features you need for your application.",
+      "properties": {
+        "setup-kafka-messaging": {
+          "type": "boolean",
+          "title": "Enable Kafka messaging",
+          "default": false
+        },
+        "generate-liquibase-migrations": {
+          "type": "boolean",
+          "title": "Generate Liquibase Migration Scripts",
+          "default": false
+        },
+        "generate-spring-backend": {
+          "type": "boolean",
+          "title": "Generate Spring Boot Backend",
+          "default": false
+        },
+        "generate-admin-ui": {
+          "type": "boolean",
+          "title": "Generate Admin Panel",
+          "default": false
+        },
+        "generate-compose-definitions": {
+          "type": "boolean",
+          "title": "Generate Docker Compose Definitions",
+          "default": false
+        },
+        "setup-swagger-ui": {
+          "type": "boolean",
+          "title": "Set up Swagger UI",
+          "default": false
+        }
+      },
+      "required": [
+        "setup-kafka-messaging",
+        "generate-liquibase-migrations",
+        "generate-spring-backend",
+        "generate-admin-ui",
+        "generate-compose-definitions",
+        "setup-swagger-ui"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": ["project"]
+}
