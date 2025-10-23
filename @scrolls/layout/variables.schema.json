@@ -3,7 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "type": "object",
-  "title": "Bootstrap Application Using Models from an Existing Database",
+  "title": "Bootstrap from an Existing Database",
   "description": "Use this project generation preset to create an application by importing table definitions from an existing database.",
   "properties": {
     "project": {
@@ -19,26 +19,6 @@
         }
       },
       "required": ["name"]
-    },
-    "database": {
-      "type": "object",
-      "title": "Source Database",
-      "description": "Specify the connection settings for your database to import table definitions.",
-      "properties": {
-        "type": {
-          "title": "Database Type",
-          "default": "",
-          "type": "string",
-          "enum": ["postgres", "mysql"]
-        },
-        "connection-string": {
-          "title": "Connection String",
-          "description": "This is the USQL connection string. You can enter a full connection string here or use an alias configured in the usql-config.yaml file located in the root of your project.",
-          "default": "",
-          "type": "string"
-        }
-      },
-      "required": ["type", "connection-string"]
     },
     "features": {
       "type": "object",
@@ -85,7 +65,51 @@
         "setup-swagger-ui"
       ],
       "additionalProperties": false
+    },
+    "database": {
+      "type": "object",
+      "title": "Source Database",
+      "description": "Specify the connection settings for your database to import table definitions.",
+      "properties": {
+        "type": {
+          "title": "Database Type",
+          "default": "",
+          "type": "string",
+          "enum": ["postgres", "mysql"]
+        },
+        "connection-string": {
+          "title": "Connection String",
+          "description": "This is the USQL connection string. You can enter a full connection string here or use an alias configured in the usql-config.yaml file located in the root of your project.",
+          "default": "",
+          "type": "string"
+        },
+        "table-whitelist": {
+          "type": "array",
+          "title": "Tables Whitelist",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": "schema.table"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["*"]
+        },
+        "table-blacklist": {
+          "type": "array",
+          "title": "Tables Blacklist",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": "schema.table"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["schema.table"]
+        }
+      },
+      "required": ["type", "connection-string"]
     }
   },
-  "required": ["project"]
+  "required": ["project", "database", "features"]
 }
