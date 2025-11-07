@@ -1,0 +1,38 @@
+# lorry: $schema=lorry:///@scrolls/setup/variables.schema.json
+
+project:
+  name: Demo Project
+database:
+  type: postgres
+  connection-string: airlines
+  table-whitelist:
+    - "*"
+backend:
+  name: backend
+  type: sbt-maven-java17
+  features:
+    kafka-messaging: true
+admin-ui:
+  name: admin_ui
+  type: vite-vue
+  features:
+    kafka-messaging: true
+    websocket-messaging: true
+migrate:
+  name: migrate
+  type: liquibase
+compose:
+  name: compose
+  features:
+    haproxy: true
+    kafka: true
+    kafka-ui: true
+    keycloak: true
+    keycloak-cli: true
+    minio: true
+    minio-cli: true
+    postgres: true
+    pgadmin: true
+    mysql: false
+    phpmyadmin: false
+    swagger-ui: true

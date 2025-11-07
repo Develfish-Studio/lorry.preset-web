@@ -1,0 +1,3 @@
+# {{ config.project.name }}
+
+This code is auto generated from {{ config.database['connection-string'] }} database.

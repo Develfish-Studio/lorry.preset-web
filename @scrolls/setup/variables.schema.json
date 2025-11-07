@@ -1,0 +1,281 @@
+{
+  "$id": "https://develfish.studio/example-store/layout.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "type": "object",
+  "title": "Bootstrap from an Existing Database",
+  "description": "Use this project generation preset to create an application by importing table definitions from an existing database.",
+  "properties": {
+    "project": {
+      "type": "object",
+      "title": "General Info",
+      "description": "This information is used to name files and directories in the target directory.",
+      "properties": {
+        "name": {
+          "title": "Project Name",
+          "default": "",
+          "type": "string",
+          "minLength": 4
+        }
+      },
+      "required": ["name"]
+    },
+    "database": {
+      "type": "object",
+      "title": "Source Database",
+      "description": "Specify the connection settings for your database to import table definitions.",
+      "properties": {
+        "type": {
+          "title": "Database Type",
+          "default": "",
+          "type": "string",
+          "enum": ["postgres", "mysql"]
+        },
+        "connection-string": {
+          "title": "Connection String",
+          "description": "This is the USQL connection string. You can enter a full connection string here or use an alias configured in the usql-config.yaml file located in the root of your project.",
+          "default": "",
+          "type": "string"
+        },
+        "table-whitelist": {
+          "type": "array",
+          "title": "Tables Whitelist",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": "schema.table"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["*"]
+        },
+        "table-blacklist": {
+          "type": "array",
+          "title": "Tables Blacklist",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": "schema.table"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["schema.table"]
+        }
+      },
+      "required": ["type", "connection-string"]
+    },
+    "backend": {
+      "title": "Backend",
+      "description": "Generate Backend Application",
+      "default": {
+        "name": "backend",
+        "type": "sbt-maven-java17",
+        "features": {
+          "kafka-messaging": false
+        }
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "default": "backend",
+          "minLength": 3
+        },
+        "type": {
+          "type": "string",
+          "enum": ["sbt-maven-java17"],
+          "default": "sbt-maven-java17"
+        },
+        "features": {
+          "type": "object",
+          "title": "Options",
+          "description": "Select the features you need for your application.",
+          "properties": {
+            "kafka-messaging": {
+              "type": "boolean",
+              "title": "Enable Kafka messaging",
+              "default": false
+            },
+            "websocket-messaging": {
+              "type": "boolean",
+              "title": "Enable WebSocket messaging",
+              "default": false
+            },
+            "minio-integration": {
+              "type": "boolean",
+              "title": "Enable S3 (Minio) integration",
+              "default": false
+            },
+            "keycloak-integration": {
+              "type": "boolean",
+              "title": "Enable OpenID (Keycloak) integration",
+              "default": false
+            }
+          }
+        }
+      },
+      "required": ["name", "type", "features"]
+    },
+    "admin-ui": {
+      "title": "Admin UI",
+      "description": "Generate Admin UI",
+      "default": {
+        "name": "admin_ui",
+        "type": "vite-vue",
+        "features": {
+          "kafka-messaging": false
+        }
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "default": "backend",
+          "minLength": 3
+        },
+        "type": {
+          "type": "string",
+          "enum": ["vite-vue"],
+          "default": "vite-vue"
+        },
+        "features": {
+          "type": "object",
+          "title": "Options",
+          "description": "Select the features you need for your application.",
+          "properties": {
+            "websocket-messaging": {
+              "type": "boolean",
+              "title": "Enable WebSocket messaging",
+              "default": false
+            }
+          }
+        }
+      },
+      "required": ["name", "type", "features"]
+    },
+    "migrate": {
+      "title": "Database Migrations",
+      "description": "Generate Database Migration Scripts",
+      "default": {
+        "name": "migrate",
+        "type": "liquibase"
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "default": "migrate",
+          "minLength": 3
+        },
+        "type": {
+          "type": "string",
+          "enum": ["liquibase"],
+          "default": "liquibase"
+        }
+      },
+      "required": ["name", "type"]
+    },
+    "compose": {
+      "title": "Docker Compose",
+      "description": "Bootstrap Docker Compose Environment",
+      "default": {
+        "name": "compose",
+        "features": {
+          "kafka": false,
+          "kafka-ui": false,
+          "keycloak": false,
+          "keycloak-cli": false,
+          "minio": false,
+          "minio-cli": false,
+          "postgres": false,
+          "pgadmin": false,
+          "mysql": false,
+          "phpmyadmin": false,
+          "swagger-ui": false,
+          "haproxy": false
+        }
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "default": "compose",
+          "minLength": 3
+        },
+        "features": {
+          "type": "object",
+          "title": "Options",
+          "description": "Select the features you need for your application.",
+          "properties": {
+            "kafka": {
+              "type": "boolean",
+              "title": "Kafka Container",
+              "default": false
+            },
+            "kafka-ui": {
+              "type": "boolean",
+              "title": "Kafka UI Container",
+              "default": false
+            },
+            "keycloak": {
+              "type": "boolean",
+              "title": "Keycloak Container",
+              "default": false
+            },
+            "keycloak-cli": {
+              "type": "boolean",
+              "title": "Keycloak CLI",
+              "default": false
+            },
+            "minio": {
+              "type": "boolean",
+              "title": "Minio Container",
+              "default": false
+            },
+            "minio-cli": {
+              "type": "boolean",
+              "title": "Minio CLI",
+              "default": false
+            },
+            "postgres": {
+              "type": "boolean",
+              "title": "Postgres Container",
+              "default": false
+            },
+            "pgadmin": {
+              "type": "boolean",
+              "title": "PgAdmin Container",
+              "default": false
+            },
+            "mysql": {
+              "type": "boolean",
+              "title": "MySQL Container",
+              "default": false
+            },
+            "phpmyadmin": {
+              "type": "boolean",
+              "title": "PhpMyAdmin Container",
+              "default": false
+            },
+            "swagger-ui": {
+              "type": "boolean",
+              "title": "Swagger UI Container",
+              "default": false
+            },
+            "haproxy": {
+              "type": "boolean",
+              "title": "HaProxy Container",
+              "default": false
+            }
+          }
+        }
+      },
+      "required": ["name", "features"]
+    }
+  },
+  "required": ["project", "database"]
+}

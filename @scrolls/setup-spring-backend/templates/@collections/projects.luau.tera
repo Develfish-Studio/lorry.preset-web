@@ -1,0 +1,23 @@
+--!strict
+
+local Meta = require('@lorry.utils/lib/Meta')
+local Project = require('@lorry.project/lib/Project')
+
+local projects = Meta:table {}
+
+export type Projects = typeof(projects)
+{# Blank line #}
+{%- if config.backend is defined %}
+projects.project_backend = Project:from('{{ config.backend.name | default(value='backend')}}')
+{%- endif %}
+{%- if config.migrate is defined %}
+projects.project_migrate = Project:from('{{ config.migrate.name | default(value='migrate')}}')
+{%- endif %}
+{%- if config.compose is defined %}
+projects.project_compose = Project:from('{{ config.migrate.name | default(value='compose')}}')
+{%- endif %}
+{%- if config['admin-ui'] is defined %}
+projects.project_admin_ui = Project:from('{{ config.migrate.name | default(value='admin-ui')}}')
+{%- endif %}
+
+return projects

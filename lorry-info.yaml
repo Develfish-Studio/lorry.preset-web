@@ -1,1 +1,6 @@
 name: lorry.preset-web
+dependencies:
+  lorry.utils:
+    uri: git@github.com:Develfish-Studio/lorry.utils.git
+  lorry.utils-usql:
+    uri: git@github.com:Develfish-Studio/lorry.utils-usql.git
