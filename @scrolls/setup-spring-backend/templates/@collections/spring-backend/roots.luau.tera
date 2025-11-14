@@ -1,27 +1,20 @@
 --!strict
 
-local Meta = require('@lorry.utils/lib/Meta')
 local POM = require('@lorry.project-spring/lib/POM')
 
-local projects = require('./projects')
+local projects = require('../projects')
 
-local roots = Meta:table {}
+local roots = {}
 
 export type Roots = typeof(roots)
 
 roots.root = POM
-  :from_root(projects.project, 'com.example', 'application')
-  :with_module "assembly_web"
-  :with_module "service_catalog"
-  :with_module "service_events"
-  :with_module "service_payments"
-  :with_module "service_profile"
-  :with_module "service_security"
-  :with_module "service_structure"
-  :with_module "service_uploads"
-  :with_module "gateway_events"
-  :with_module "gateway_payments"
-  :with_module "gateway_profile"
-  :with_module "shared_api"
+  :from_root(projects.project_backend, 'com.example', 'application')
+  {%- for catalog in db.catalogs %}
+  :with_module "assembly_{{ catalog.catalog_name }}"
+  {%- endfor %}
+  {%- for schema in db.schemas %}
+  :with_module "service_{{ schema.catalog_name }}_{{ schema.schema_name }}"
+  {%- endfor %}
 
 return roots

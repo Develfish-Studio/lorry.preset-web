@@ -37,29 +37,107 @@
           "default": "",
           "type": "string"
         },
-        "table-whitelist": {
+        "catalog-whitelist": {
           "type": "array",
-          "title": "Tables Whitelist",
+          "title": "Catalogs Whitelist",
+          "description": "This is a list of Lua patterns used to whitelist database catalogs. To whitelist all catalogs, simply omit the patterns.",
           "items": {
             "type": "string",
             "minLength": 1,
-            "default": "schema.table"
+            "default": ["[%w_]+"],
+            "examples": [
+              "[%w_]+",
+              "my_db"
+            ]
           },
           "minItems": 1,
           "uniqueItems": true,
-          "default": ["*"]
+          "default": [".*"]
+        },
+        "catalog-blacklist": {
+          "type": "array",
+          "title": "Catalogs Blacklist",
+          "description": "This is a list of Lua patterns used to blacklist database catalogs.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": "my_db",
+            "examples": [
+              "[%w_]+",
+              "my_db"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["my_db"]
+        },
+        "schema-whitelist": {
+          "type": "array",
+          "title": "Schemas Whitelist",
+          "description": "This is a list of Lua patterns used to whitelist database schemas by their full names. The full name of a schema is composed of the catalog and schema name, separated by dot (e.g., catalog.schema). To whitelist all schemas, simply omit the patterns.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": ["[%w_]+%.[%w_]+"],
+            "examples": [
+              "[%w_]+%.[%w_]+",
+              "my_db%.my_schema"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": [".*"]
+        },
+        "schema-blacklist": {
+          "type": "array",
+          "title": "Schemas Blacklist",
+          "description": "This is a list of Lua patterns used to blacklist database schemas by their full names. The full name of a schema is composed of the catalog and schema name, separated by dot (e.g., catalog.schema).",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": "my_db%.my_schema",
+            "examples": [
+              "[%w_]+%.[%w_]+",
+              "my_db%.my_schema"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["[w%_]+%.information_schema"]
+        },
+        "table-whitelist": {
+          "type": "array",
+          "title": "Tables Whitelist",
+          "description": "This is a list of Lua patterns used to whitelist database tables by their full names. The full name of a table is composed of the catalog, schema, and table name, separated by dots (e.g., catalog.schema.table). To whitelist all tables, simply omit the patterns.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "default": ["[%w_]+%.[%w_]+%.[%w_]+"],
+            "examples": [
+              "[%w_]+%.[%w_]+%.[%w_]+",
+              "my_db%.my_schema%.[%w_]+"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": [".*"]
         },
         "table-blacklist": {
           "type": "array",
           "title": "Tables Blacklist",
+          "description": "This is a list of Lua patterns used to blacklist database tables by their full names. The full name of a table is composed of the catalog, schema, and table name, separated by dots (e.g., catalog.schema.table).",
           "items": {
             "type": "string",
             "minLength": 1,
-            "default": "schema.table"
+            "default": "my_db%.my_schema%.my_table",
+            "examples": [
+              "[%w_]+%.[%w_]+%.[%w_]+",
+              "my_db%.my_schema%.[%w_]+"
+            ]
           },
           "minItems": 1,
           "uniqueItems": true,
-          "default": ["schema.table"]
+          "default": ["my_db%.my_schema%.my_table"]
         }
       },
       "required": ["type", "connection-string"]
@@ -70,6 +148,8 @@
       "default": {
         "name": "backend",
         "type": "sbt-maven-java17",
+        "package": "com.example.app",
+        "version": "1.0.0-SNAPSHOT",
         "features": {
           "kafka-messaging": false
         }
@@ -86,6 +166,20 @@
           "type": "string",
           "enum": ["sbt-maven-java17"],
           "default": "sbt-maven-java17"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "Namespace",
+          "default": "com.example.app",
+          "description": "Base Package or Namespace Name",
+          "pattern": "(\\w+)(\\.\\w+)*"
+        },
+        "version": {
+          "type": "string",
+          "title": "Version",
+          "default": "1.0.0-SNAPHOT",
+          "minLength": 3,
+          "pattern": "(\\d+)\\.(\\d+)\\.(\\d+)(-(\\w+))?"
         },
         "features": {
           "type": "object",

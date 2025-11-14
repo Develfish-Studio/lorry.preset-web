@@ -18,6 +18,10 @@ export type Config = {
     ['connection-string']: string,
     ['table-whitelist']: {string}?,
     ['table-blacklist']: {string}?,
+    ['schema-whitelist']: {string}?,
+    ['schema-blacklist']: {string}?,
+    ['catalog-whitelist']: {string}?,
+    ['catalog-blacklist']: {string}?,
   }
 }
 
@@ -50,11 +54,43 @@ function Setup:generate()
     :database(this.config.database["connection-string"])
     :universal(this.config.database.type)
 
+  local filter = {
+    catalog_blacklist = this.config.database["catalog-blacklist"],
+    catalog_whitelist = this.config.database["catalog-whitelist"],
+    schema_blacklist = this.config.database["schema-blacklist"],
+    schema_whitelist = this.config.database["schema-whitelist"],
+    table_blacklist = this.config.database["table-blacklist"],
+    table_whitelist = this.config.database["table-whitelist"],
+  }
+
+  local entities = database:filter_table_entities(nil, filter)
+
+  local catalogs_map = Meta:table {}
+  local schemas_map = Meta:table {}
+
+  local catalogs = Meta:array {}
+  local schemas = Meta:array {}
+
+  for i, e in entities do
+    local catalog_name = e.table.table_catalog
+    local schema_name = `{e.table.table_catalog}.{e.table.table_schema}`
+    if catalogs_map[catalog_name] == nil then
+      catalogs_map[catalog_name] = e.catalog
+      catalogs[#catalogs + 1] = e.catalog
+    end
+    if schemas_map[schema_name] == nil then
+      schemas_map[schema_name] = e.catalog
+      schemas[#schemas + 1] = e.schema
+    end
+  end
+
   local db = {
-    catalogs = database:catalog_records(),
-    schemas = database:schema_records(),
-    tables = database:table_records(),
-    entities = database:table_entities(),
+    -- catalogs = database:filter_catalog_records(nil, filter),
+    -- schemas = database:filter_schema_records(nil, filter),
+    -- tables = database:filter_table_records(nil, filter),
+    catalogs = catalogs,
+    schemas = schemas,
+    entities = database:filter_table_entities(nil, filter),
   }
 
   Lorry:generate "@lorry.preset-web/setup" {

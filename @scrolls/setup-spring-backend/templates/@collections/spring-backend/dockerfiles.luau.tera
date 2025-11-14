@@ -1,12 +1,17 @@
+--!strict
+
 local Docker = require('@lorry.project-spring/lib/Docker/Docker')
 
 local roots = require('./roots')
 
 local dockerfiles = {}
 
+{%- for catalog in db.catalogs %}
+{# Blank line #}
 dockerfiles.docker = Docker
   :from(roots.root)
-  :with_image('assembly_web')
-  :with_namespace('store')
+  :with_image('assembly-{{ catalog.catalog_name | slugify }}')
+  :with_namespace('{{ config.backend.namespace | slugify }}')
+{%- endfor %}
 
 return dockerfiles

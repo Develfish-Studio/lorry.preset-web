@@ -1,3 +1,5 @@
+--!strict
+
 local Assembly = require('@lorry.project-spring/lib/Assembly')
 
 local modules = require('./modules')
@@ -6,18 +8,15 @@ local assemblies = {}
 
 export type Assemblies = typeof(assemblies)
 
-assemblies.assembly_web = Assembly:from(modules.assembly_web, {
-  modules.service_catalog,
-  modules.service_profile,
-  modules.service_payments,
-  modules.service_events,
-  modules.service_security,
-  modules.service_structure,
-  modules.service_uploads,
-  modules.shared_api,
-  modules.gateway_events,
-  modules.gateway_payments,
-  modules.gateway_profile,
+{%- for catalog in db.catalogs %}
+{# Blank line #}
+assemblies.assembly_{{ catalog.catalog_name }} = Assembly:from(modules.assembly_{{ catalog.catalog_name }}, {
+  {%- for schema in db.schemas %}
+  {%- if schema.catalog_name == catalog.catalog_name %}
+  modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }},
+  {%- endif %}
+  {%- endfor %}
 })
+{%- endfor %}
 
 return assemblies
