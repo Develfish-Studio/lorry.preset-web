@@ -8,7 +8,9 @@ local units = require('./units')
 local statements = {}
 {# Blank line #}
 {%- for e in db.entities %}
-statements.ddl_{{ e.table.table_schema }}_{{ e.table.table_name }} = DDL:from(projects.project_migrate, units.unit_{{ e.table.table_schema }}_{{ e.table.table_name }})
+{%- if e.table.table_type == 'BASE TABLE' %}
+statements.ddl_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }} = DDL:from(projects.project_migrate, units.unit_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }})
+{%- endif %}
 {%- endfor %}
 
 return statements

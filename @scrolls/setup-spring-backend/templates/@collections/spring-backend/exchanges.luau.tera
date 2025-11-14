@@ -19,3 +19,5 @@ exchanges.exchange_service_{{ schema.catalog_name }}_{{ schema.schema_name }} = 
     {%- endfor %}
   }
 {%- endfor %}
+
+return exchanges

@@ -12,20 +12,24 @@ export type Resources = typeof(resources)
 -- System resources
 
 {%- for e in db.entities %}
+{%- if e.table.table_type == 'BASE TABLE' %}
 {# Blank line #}
-resources.resource_system_{{ e.table.table_schema }}_{{ e.table.table_name }} = Resource
-    :from(projections.projection_system, units.unit_{{ e.table.table_schema }}_{{ e.table.table_name }})
-    :with_title("{{ e.table.table_schema ~ ' ' ~ e.table.table_name | title }}")
-    :with_expanded_signals('{{ e.table.table_schema | slugify }}-{{ e.table.table_name | slugify }}')
+resources.resource_system_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }} = Resource
+    :from(projections.projection_system, units.unit_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }})
+    :with_title("{{ e.table.table_catalog ~ ' ' ~ e.table.table_schema ~ ' ' ~ e.table.table_name | title }}")
+    :with_expanded_signals('{{ e.table.table_catalog | slugify }}-{{ e.table.table_schema | slugify }}-{{ e.table.table_name | slugify }}')
+{%- endif %}
 {%- endfor %}
 
 -- Publicly accessible resources
 
 {%- for e in db.entities %}
+{%- if e.table.table_type == 'BASE TABLE' %}
 {# Blank line #}
-resources.resource_anonymous_{{ e.table.table_schema }}_{{ e.table.table_name }} = Resource
-    :from(projections.projection_anonymous, units.unit_{{ e.table.table_schema }}_{{ e.table.table_name }})
-    :with_title("{{ e.table.table_schema ~ ' ' ~ e.table.table_name | title }}")
+resources.resource_anonymous_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }} = Resource
+    :from(projections.projection_anonymous, units.unit_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }})
+    :with_title("{{ e.table.table_catalog ~ ' ' ~ e.table.table_schema ~ ' ' ~ e.table.table_name | title }}")
+{%- endif %}
 {%- endfor %}
 
 return resources
