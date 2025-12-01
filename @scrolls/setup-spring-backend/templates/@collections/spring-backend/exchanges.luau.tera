@@ -14,7 +14,7 @@ exchanges.exchange_service_{{ schema.catalog_name }}_{{ schema.schema_name }} = 
   :setup {
     {%- for entity in db.entities %}
     {%- if entity.table.table_schema == schema.schema_name %}
-    Topic:from('{{ entity.table.table_catalog ~ '-' ~ entity.table.table_schema ~ '-' ~ entity.table.table_name | slugify }}'),
+    Topic:from('{{ entity.table.table_catalog ~ '_' ~ entity.table.table_schema ~ '_' ~ entity.table.table_name }}'),
     {%- endif %}
     {%- endfor %}
   }

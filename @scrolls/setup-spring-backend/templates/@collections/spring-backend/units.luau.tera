@@ -14,13 +14,13 @@ local units = {}
 units.unit_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }} = Unit
   :from_table(modules.service_{{ e.table.table_catalog }}_{{ e.table.table_schema }}, "{{ e.table.table_schema }}.{{ e.table.table_name }}")
   :setup {
-    {%- for column_entity in e.columns %}
-    {%- if column_entity.type == 'pk' %}
-    PK:text '{{ column_entity.column.column_name }}',
-    {%- else %}
-    Prop:text '{{ column_entity.column.column_name }}',
-    {%- endif %}
-    {%- endfor %}
+  {%- for column_entity in e.columns %}
+  {%- if column_entity.type == 'pk' %}
+    PK:{{ column_entity.column.data_type.name | default(value='unknown') }} '{{ column_entity.column.column_name }}',
+  {%- else %}
+    Prop:{{ column_entity.column.data_type.name | default(value='unknown') }} '{{ column_entity.column.column_name }}',
+  {%- endif %}
+  {%- endfor %}
   }
 {%- endif %}
 {%- endfor %}

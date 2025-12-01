@@ -12,18 +12,26 @@ export type Modules = typeof(modules)
 {%- for catalog in db.catalogs %}
 {# Blank line #}
 modules.assembly_{{ catalog.catalog_name }} = Module
-  :from(roots.root, 'assembly', 'assembly_{{ catalog.catalog_name }}')
+  :from(roots.root, 'assembly', '{{ catalog.catalog_name }}-assembly')
   :with_profile('local', profiles.profile_local_full:copy():with_server_port(8080))
 {%- endfor %}
 
 {%- for schema in db.schemas %}
 {# Blank line #}
 modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
-  :from(roots.root, 'web', '{{ schema.catalog_name }}_{{ schema.schema_name }}')
+  :from(roots.root, 'web', '{{ schema.catalog_name }}-{{ schema.schema_name }}-web')
   :with_profile('local', profiles.profile_local:copy():with_server_port(8082))
-  :with_dependency('studio.develfish.guppy', 'common-jpa')
-  :with_dependency('studio.develfish.guppy', 'common-web')
-  :with_dependency('studio.develfish.guppy', 'common-events')
+  :with_dependency('studio.develfish.guppy', 'common-api')
+  :with_dependency('studio.develfish.guppy', 'common-context')
+  :with_dependency('studio.develfish.guppy', 'events-api')
+  :with_dependency('studio.develfish.guppy', 'events-context')
+  :with_dependency('studio.develfish.guppy', 'query-api')
+  :with_dependency('studio.develfish.guppy', 'query-context')
+  :with_dependency('studio.develfish.guppy', 'web-security-context')
+  :with_dependency('studio.develfish.guppy', 'web-mvc-api')
+  :with_dependency('studio.develfish.guppy', 'web-mvc-context')
+  :with_dependency('studio.develfish.guppy', 'web-ws-api')
+  :with_dependency('studio.develfish.guppy', 'web-ws-context')
 {%- endfor %}
 
 return modules
