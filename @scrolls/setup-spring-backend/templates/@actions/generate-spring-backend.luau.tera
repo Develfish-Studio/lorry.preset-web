@@ -32,16 +32,20 @@ end
 -- Generate Modules
 for _, module in modules do
   local item = module::Module.Module
-  if item.kind == 'web' then
-    Lorry:generate "@lorry.project-spring/module_web" { target = '@root', variables = item }
-  elseif item.kind == 'lib' then
-    Lorry:generate "@lorry.project-spring/module_lib" { target = '@root', variables = item }
-  elseif item.kind == 'gateway' then
-    Lorry:generate "@lorry.project-spring/module_web" { target = '@root', variables = item }
-  elseif item.kind == 'security' then
-    Lorry:generate "@lorry.project-spring/module_security" { target = '@root', variables = item }
-  elseif item.kind == 'uploads' then
-    Lorry:generate "@lorry.project-spring/module_uploads" { target = '@root', variables = item }
+
+  Lorry:generate "@lorry.project-spring/module" { target = '@root', variables = item }
+
+  if table.find(item.natures, 'app') then
+    Lorry:generate "@lorry.project-spring/nature_app" { target = '@root', variables = item }
+  end
+  if table.find(item.natures, 'web') then
+    Lorry:generate "@lorry.project-spring/nature_web" { target = '@root', variables = item }
+  end
+  if table.find(item.natures, 'security') then
+    Lorry:generate "@lorry.project-spring/nature_security" { target = '@root', variables = item }
+  end
+  if table.find(item.natures, 'uploads') then
+    Lorry:generate "@lorry.project-spring/nature_uploads" { target = '@root', variables = item }
   end
 end
 

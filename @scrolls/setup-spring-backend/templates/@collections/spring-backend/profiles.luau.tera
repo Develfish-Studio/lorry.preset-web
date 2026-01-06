@@ -3,6 +3,8 @@
 local PropTypes = require('@lorry.project/lib/PropTypes')
 local Profile = require('@lorry.project-spring/lib/Profile/Profile')
 
+local modules = require('./modules')
+
 local profiles = {}
 
 export type Profiles = typeof(profiles)
@@ -29,10 +31,15 @@ local minio_remote: PropTypes.MinioRemote = {
   secret_key = 'AZitoDkffcEYFYUmV4CGv1jr2fiXWIw4uSvdFlDu',
 }
 
-profiles.profile_local_with_minio_client = Profile
-  :from('local')
+{%- for catalog in db.catalogs %}
+{# Blank line #}
+profiles.profile_{{ catalog.catalog_name }}_assembly = Profile
+  :from(modules.assembly_{{ catalog.catalog_name }})
   :with_server_port(server_port)
+  :with_app_openid_remote(openid_remote)
   :with_app_minio_client(minio_remote)
+  :with_spring_jpa(true)
+  :with_spring_datasource(datasource)
   :configure {
     function(impl) assert(impl.app_minio_client)
       :with_bucket 'app-public-document'
@@ -40,25 +47,17 @@ profiles.profile_local_with_minio_client = Profile
       :with_bucket('app-product-image', { content_type = 'image/', content_length = '10M' })
     end
   }
+{%- endfor %}
 
-profiles.profile_local_with_openid_client = Profile
-  :from('local')
-  :with_server_port(8080)
-  :with_app_openid_remote(openid_remote)
-
-profiles.profile_local = Profile
-  :from('local')
+{%- for schema in db.schemas %}
+{# Blank line #}
+profiles.profile_{{ schema.catalog_name }}_{{ schema.schema_name }}_web = Profile
+  :from(modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }})
   :with_server_port(server_port)
-  :with_spring_jpa(true)
-  :with_spring_datasource(datasource)
-
-profiles.profile_local_full = Profile
-  :from('local')
-  :with_server_port(server_port)
-  :with_spring_jpa(true)
-  :with_spring_datasource(datasource)
   :with_app_openid_remote(openid_remote)
   :with_app_minio_client(minio_remote)
+  :with_spring_jpa(true)
+  :with_spring_datasource(datasource)
   :configure {
     function(impl) assert(impl.app_minio_client)
       :with_bucket 'app-public-document'
@@ -66,5 +65,6 @@ profiles.profile_local_full = Profile
       :with_bucket('app-product-image', { content_type = 'image/', content_length = '10M' })
     end
   }
+{%- endfor %}
 
 return profiles

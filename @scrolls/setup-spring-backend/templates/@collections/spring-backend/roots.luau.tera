@@ -14,7 +14,9 @@ roots.root = POM
   :with_module "{{ catalog.catalog_name }}-assembly"
   {%- endfor %}
   {%- for schema in db.schemas %}
-  :with_module "{{ schema.catalog_name }}-{{ schema.schema_name }}-web"
+  :with_module "{{ schema.catalog_name }}-{{ schema.schema_name }}-handler"
+  :with_module "{{ schema.catalog_name }}-{{ schema.schema_name }}-lib"
+  :with_module "{{ schema.catalog_name }}-{{ schema.schema_name }}-service"
   {%- endfor %}
 
 return roots

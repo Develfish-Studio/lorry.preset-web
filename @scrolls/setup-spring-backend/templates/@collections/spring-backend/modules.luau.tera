@@ -3,35 +3,52 @@
 local Module = require('@lorry.project-spring/lib/Module')
 
 local roots = require('./roots')
-local profiles = require('./profiles')
 
 local modules = {}
 
 export type Modules = typeof(modules)
 
+{%- for schema in db.schemas %}
+{# Blank line #}
+modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
+  :from(roots.root, '{{ schema.catalog_name }}-{{ schema.schema_name }}-lib')
+  :with_natures { 'data' }
+  :with_dependency('studio.develfish.guppy', 'common-context')
+  :with_dependency('studio.develfish.guppy', 'jpa-context')
+
+modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
+  :from(roots.root, '{{ schema.catalog_name }}-{{ schema.schema_name }}-service')
+  :with_natures { 'app', 'web', 'data' }
+  :with_reference(modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }})
+  :with_dependency('studio.develfish.guppy', 'common-context')
+  :with_dependency('studio.develfish.guppy', 'consumer-kafka-context')
+  :with_dependency('studio.develfish.guppy', 'producer-kafka-context')
+  :with_dependency('studio.develfish.guppy', 'events-context')
+  :with_dependency('studio.develfish.guppy', 'query-context')
+  :with_dependency('studio.develfish.guppy', 'web-security-context')
+  :with_dependency('studio.develfish.guppy', 'web-mvc-context')
+  :with_dependency('studio.develfish.guppy', 'web-ws-context')
+
+modules.handler_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
+  :from(roots.root, '{{ schema.catalog_name }}-{{ schema.schema_name }}-handler')
+  :with_natures { 'app', 'data' }
+  :with_reference(modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }})
+  :with_dependency('studio.develfish.guppy', 'common-context')
+  :with_dependency('studio.develfish.guppy', 'consumer-kafka-context')
+  :with_dependency('studio.develfish.guppy', 'producer-kafka-context')
+{%- endfor %}
+
 {%- for catalog in db.catalogs %}
 {# Blank line #}
 modules.assembly_{{ catalog.catalog_name }} = Module
-  :from(roots.root, 'assembly', '{{ catalog.catalog_name }}-assembly')
-  :with_profile('local', profiles.profile_local_full:copy():with_server_port(8080))
-{%- endfor %}
+  :from(roots.root, '{{ catalog.catalog_name }}-assembly')
+  {%- for schema in db.schemas %}
+  {%- if schema.catalog_name == catalog.catalog_name %}
+  :with_reference(modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }})
+  :with_reference(modules.handler_{{ schema.catalog_name }}_{{ schema.schema_name }})
+  {%- endif %}
+  {%- endfor %}
 
-{%- for schema in db.schemas %}
-{# Blank line #}
-modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
-  :from(roots.root, 'web', '{{ schema.catalog_name }}-{{ schema.schema_name }}-web')
-  :with_profile('local', profiles.profile_local:copy():with_server_port(8082))
-  :with_dependency('studio.develfish.guppy', 'common-api')
-  :with_dependency('studio.develfish.guppy', 'common-context')
-  :with_dependency('studio.develfish.guppy', 'events-api')
-  :with_dependency('studio.develfish.guppy', 'events-context')
-  :with_dependency('studio.develfish.guppy', 'query-api')
-  :with_dependency('studio.develfish.guppy', 'query-context')
-  :with_dependency('studio.develfish.guppy', 'web-security-context')
-  :with_dependency('studio.develfish.guppy', 'web-mvc-api')
-  :with_dependency('studio.develfish.guppy', 'web-mvc-context')
-  :with_dependency('studio.develfish.guppy', 'web-ws-api')
-  :with_dependency('studio.develfish.guppy', 'web-ws-context')
 {%- endfor %}
 
 return modules

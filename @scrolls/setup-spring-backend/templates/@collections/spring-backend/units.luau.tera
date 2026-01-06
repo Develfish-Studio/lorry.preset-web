@@ -12,7 +12,7 @@ local units = {}
 {%- if e.table.table_type == 'BASE TABLE' %}
 {# Blank line #}
 units.unit_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }} = Unit
-  :from_table(modules.service_{{ e.table.table_catalog }}_{{ e.table.table_schema }}, "{{ e.table.table_schema }}.{{ e.table.table_name }}")
+  :from_table(modules.shared_{{ e.table.table_catalog }}_{{ e.table.table_schema }}, "{{ e.table.table_schema }}.{{ e.table.table_name }}")
   :setup {
   {%- for column_entity in e.columns %}
   {%- if column_entity.type == 'pk' %}
