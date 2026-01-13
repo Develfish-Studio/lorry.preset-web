@@ -23,10 +23,10 @@ projections.projection_system = Projection
 projections.projection_profile = Projection
   :from("profile")
   :setup {
-    Auth:subject "customer_id";
-    Projection.Filter:from_path('customer_id', 'context.customer_id');
-    Projection.Override:from_context "customer_id";
-    -- Projection.Validate:equals('entity.customer_id', 'context.customer_id'),
+    Auth:subject "profile_id";
+    Projection.Filter:from_path('profile_id', 'context.profile_id');
+    Projection.Override:from_context "profile_id";
+    -- Projection.Validate:equals('entity.profile_id', 'context.profile_id'),
     Action:get "isAuthenticated()";
     Action:select "isAuthenticated()";
     Action:create "isAuthenticated()";
@@ -38,8 +38,8 @@ projections.projection_profile = Projection
 projections.projection_anonymous = Projection
   :from("anonymous")
   :setup {
-    Action:get '';
-    Action:select '';
+    Action:get();
+    Action:select();
   }
 
 return projections

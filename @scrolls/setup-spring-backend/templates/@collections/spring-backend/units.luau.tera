@@ -1,7 +1,7 @@
 --!strict
 
 local Unit = require('@lorry.project-spring/lib/Unit/Unit')
-local PK = require('@lorry.project-spring/lib/Unit/Entity/PK')
+local Key = require('@lorry.project-spring/lib/Unit/Entity/Key')
 local Prop = require('@lorry.project-spring/lib/Unit/Entity/Prop')
 local Ref = require('@lorry.project-spring/lib/Unit/Entity/Ref')
 
@@ -16,7 +16,7 @@ units.unit_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.tab
   :setup {
   {%- for column_entity in e.columns %}
   {%- if column_entity.type == 'pk' %}
-    PK:{{ column_entity.column.data_type.name | default(value='unknown') }} '{{ column_entity.column.column_name }}',
+    Key:{{ column_entity.column.data_type.name | default(value='unknown') }} '{{ column_entity.column.column_name }}',
   {%- else %}
     Prop:{{ column_entity.column.data_type.name | default(value='unknown') }} '{{ column_entity.column.column_name }}',
   {%- endif %}

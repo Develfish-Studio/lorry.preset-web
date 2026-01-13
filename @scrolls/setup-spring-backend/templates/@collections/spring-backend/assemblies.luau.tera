@@ -15,6 +15,7 @@ assemblies.assembly_{{ catalog.catalog_name }} = Assembly
   {%- for schema in db.schemas %}
   {%- if schema.catalog_name == catalog.catalog_name %}
   :with_child(modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }})
+  :with_child(modules.handler_{{ schema.catalog_name }}_{{ schema.schema_name }})
   {%- endif %}
   {%- endfor %}
 {%- endfor %}

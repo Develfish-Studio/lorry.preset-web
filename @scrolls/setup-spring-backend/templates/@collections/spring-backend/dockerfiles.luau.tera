@@ -10,7 +10,7 @@ local dockerfiles = {}
 {# Blank line #}
 dockerfiles.docker = Docker
   :from(roots.root)
-  :with_image('assembly-{{ catalog.catalog_name | slugify }}')
+  :with_image('{{ catalog.catalog_name | slugify }}-assembly')
   :with_namespace('{{ config.backend.namespace | slugify }}')
 {%- endfor %}
 

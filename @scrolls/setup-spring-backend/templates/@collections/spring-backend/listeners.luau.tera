@@ -1,7 +1,16 @@
 --!strict
 
-local listeners = {}
+local Listener = require('@lorry.project-spring/lib/Exchange/Listener')
 
-export type Listeners = typeof(listeners)
+local modules = require('./modules')
+
+local listeners = {}
+{%- for e in db.entities %}
+{%- if e.table.table_type == 'BASE TABLE' %}
+{# Blank line #}
+listeners.exchange_{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }} = Listener
+  :from(modules.handler_{{ e.table.table_catalog }}_{{ e.table.table_schema }}, '{{ e.table.table_catalog }}_{{ e.table.table_schema }}_{{ e.table.table_name }}')
+{%- endif %}
+{%- endfor %}
 
 return listeners
