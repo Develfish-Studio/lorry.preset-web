@@ -7,7 +7,6 @@ local modules = require('@collections/spring-backend/modules')
 local dockerfiles = require('@collections/spring-backend/dockerfiles')
 local units = require('@collections/spring-backend/units')
 local exchanges = require('@collections/spring-backend/exchanges')
-local assemblies = require('@collections/spring-backend/assemblies')
 local listeners = require('@collections/spring-backend/listeners')
 local resources = require('@collections/spring-backend/resources')
 local statements = require('@collections/spring-backend/statements')
@@ -24,28 +23,31 @@ for _, docker in dockerfiles do
   Lorry:generate "@lorry.project-spring/docker" { target = '@root', variables = docker }
 end
 
--- Generate Assemblies
-for _, assembly in assemblies do
-  Lorry:generate "@lorry.project-spring/assembly" { target = '@root', variables = assembly }
-end
-
 -- Generate Modules
 for _, module in modules do
   local item = module::Module.Module
 
   Lorry:generate "@lorry.project-spring/module" { target = '@root', variables = item }
 
-  if table.find(item.natures, 'app') then
+  local natures = item:unwrap_natures()
+
+  if natures['app'::Module.ModuleNature] == 'source' then
     Lorry:generate "@lorry.project-spring/nature_app" { target = '@root', variables = item }
   end
-  if table.find(item.natures, 'web') then
+  if natures['web'::Module.ModuleNature] == 'source' then
     Lorry:generate "@lorry.project-spring/nature_web" { target = '@root', variables = item }
   end
-  if table.find(item.natures, 'security') then
-    Lorry:generate "@lorry.project-spring/nature_security" { target = '@root', variables = item }
+  if natures['openid-client'::Module.ModuleNature] == 'source' then
+    Lorry:generate "@lorry.project-spring/nature_openid_client" { target = '@root', variables = item }
   end
-  if table.find(item.natures, 'uploads') then
-    Lorry:generate "@lorry.project-spring/nature_uploads" { target = '@root', variables = item }
+  if natures['openid-proxy'::Module.ModuleNature] == 'source' then
+    Lorry:generate "@lorry.project-spring/nature_openid_proxy" { target = '@root', variables = item }
+  end
+  if natures['s3-client'::Module.ModuleNature] == 'source' then
+    Lorry:generate "@lorry.project-spring/nature_s3_client" { target = '@root', variables = item }
+  end
+  if natures['s3-proxy'::Module.ModuleNature] == 'source' then
+    Lorry:generate "@lorry.project-spring/nature_s3_proxy" { target = '@root', variables = item }
   end
 end
 

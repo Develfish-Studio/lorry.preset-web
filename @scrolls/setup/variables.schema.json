@@ -147,7 +147,7 @@
       "description": "Generate Backend Application",
       "default": {
         "name": "backend",
-        "type": "sbt-maven-java17",
+        "type": "sbt-maven",
         "package": "com.example.app",
         "version": "1.0.0-SNAPSHOT",
         "features": {
@@ -164,8 +164,8 @@
         },
         "type": {
           "type": "string",
-          "enum": ["sbt-maven-java17"],
-          "default": "sbt-maven-java17"
+          "enum": ["sbt-maven"],
+          "default": "sbt-maven"
         },
         "namespace": {
           "type": "string",
@@ -217,6 +217,7 @@
       "default": {
         "name": "admin_ui",
         "type": "vite-vue",
+        "version": "1.0.0-SNAPSHOT",
         "features": {
           "kafka-messaging": false
         }
@@ -233,6 +234,20 @@
           "type": "string",
           "enum": ["vite-vue"],
           "default": "vite-vue"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "Namespace",
+          "default": "com.example.app",
+          "description": "Base Package or Namespace Name",
+          "pattern": "(\\w+)(\\.\\w+)*"
+        },
+        "version": {
+          "type": "string",
+          "title": "Version",
+          "default": "1.0.0-SNAPHOT",
+          "minLength": 3,
+          "pattern": "(\\d+)\\.(\\d+)\\.(\\d+)(-(\\w+))?"
         },
         "features": {
           "type": "object",

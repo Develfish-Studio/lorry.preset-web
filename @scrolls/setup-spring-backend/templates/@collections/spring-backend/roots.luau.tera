@@ -9,7 +9,8 @@ local roots = {}
 export type Roots = typeof(roots)
 
 roots.root = POM
-  :from_root(projects.project_backend, 'com.example', '{{ config.backend.name | default(value='backend')}}')
+  :from_root(projects.project_backend, '{{ config.backend.namespace | default(value='com.example')}}', '{{ config.backend.name | default(value='backend')}}')
+  :with_module "security-service"
   {%- for catalog in db.catalogs %}
   :with_module "{{ catalog.catalog_name }}-assembly"
   {%- endfor %}

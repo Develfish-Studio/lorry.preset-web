@@ -9,7 +9,7 @@ database:
     - "*"
 backend:
   name: backend
-  type: sbt-maven-java17
+  type: sbt-maven
   features:
     kafka-messaging: true
 admin-ui:

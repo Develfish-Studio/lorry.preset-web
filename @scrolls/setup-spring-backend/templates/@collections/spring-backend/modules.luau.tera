@@ -8,6 +8,16 @@ local modules = {}
 
 export type Modules = typeof(modules)
 
+modules.service_security = Module
+  :from(roots.root, 'security-service')
+  :with_natures { 'app', 'web', 'openid-client', 'openid-proxy' }
+  :with_dependency('studio.develfish.guppy', 'common-context')
+  :with_dependency('studio.develfish.guppy', 'jpa-context')
+  :with_dependency('studio.develfish.guppy', 'producer-kafka')
+  :with_dependency('studio.develfish.guppy', 'events-context')
+  :with_dependency('studio.develfish.guppy', 'openid-proxy-keycloak')
+  :with_dependency('studio.develfish.guppy', 'web-context')
+
 {%- for schema in db.schemas %}
 {# Blank line #}
 modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
@@ -18,30 +28,32 @@ modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
 
 modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
   :from(roots.root, '{{ schema.catalog_name }}-{{ schema.schema_name }}-service')
-  :with_natures { 'app', 'web', 'data' }
+  :with_natures { 'app', 'web', 'data', 'openid-client' }
   :with_reference(modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }})
   :with_dependency('studio.develfish.guppy', 'common-context')
-  :with_dependency('studio.develfish.guppy', 'consumer-kafka-context')
-  :with_dependency('studio.develfish.guppy', 'producer-kafka-context')
+  :with_dependency('studio.develfish.guppy', 'consumer-kafka')
+  :with_dependency('studio.develfish.guppy', 'producer-kafka')
   :with_dependency('studio.develfish.guppy', 'events-context')
   :with_dependency('studio.develfish.guppy', 'query-context')
-  :with_dependency('studio.develfish.guppy', 'web-security-context')
-  :with_dependency('studio.develfish.guppy', 'web-mvc-context')
-  :with_dependency('studio.develfish.guppy', 'web-ws-context')
+  :with_dependency('studio.develfish.guppy', 'openid-client')
+  :with_dependency('studio.develfish.guppy', 'web-context')
+  :with_dependency('studio.develfish.guppy', 'ws-context')
 
 modules.handler_{{ schema.catalog_name }}_{{ schema.schema_name }} = Module
   :from(roots.root, '{{ schema.catalog_name }}-{{ schema.schema_name }}-handler')
   :with_natures { 'app', 'data' }
   :with_reference(modules.shared_{{ schema.catalog_name }}_{{ schema.schema_name }})
   :with_dependency('studio.develfish.guppy', 'common-context')
-  :with_dependency('studio.develfish.guppy', 'consumer-kafka-context')
-  :with_dependency('studio.develfish.guppy', 'producer-kafka-context')
+  :with_dependency('studio.develfish.guppy', 'consumer-kafka')
+  :with_dependency('studio.develfish.guppy', 'producer-kafka')
 {%- endfor %}
 
 {%- for catalog in db.catalogs %}
 {# Blank line #}
 modules.assembly_{{ catalog.catalog_name }} = Module
   :from(roots.root, '{{ catalog.catalog_name }}-assembly')
+  :with_natures { 'app', 'web', 'data', 'openid-client' }
+  :with_reference(modules.service_security)
   {%- for schema in db.schemas %}
   {%- if schema.catalog_name == catalog.catalog_name %}
   :with_reference(modules.service_{{ schema.catalog_name }}_{{ schema.schema_name }})
